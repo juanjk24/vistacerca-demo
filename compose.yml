@@ -1,0 +1,130 @@
+name: vistacerca
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000/api
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - USER_SERVICE_URL=http://user-service:3001
+      - ASSESSMENT_SERVICE_URL=http://assessment-service:3002
+      - PARTNER_SERVICE_URL=http://partner-service:3003
+      - APPOINTMENT_SERVICE_URL=http://appointment-service:3004
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    depends_on:
+      - user-service
+      - assessment-service
+      - partner-service
+      - appointment-service
+
+  user-service:
+    build: ./user-service
+    environment:
+      - PORT=3001
+      - DATABASE_URL=postgres://vistacerca:vistacerca@postgres:5432/vistacerca
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  assessment-service:
+    build: ./assessment-service
+    environment:
+      - PORT=3002
+      - DATABASE_URL=postgres://vistacerca:vistacerca@postgres:5432/vistacerca
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  partner-service:
+    build: ./partner-service
+    environment:
+      - PORT=3003
+      - DATABASE_URL=postgres://vistacerca:vistacerca@postgres:5432/vistacerca
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  appointment-service:
+    build: ./appointment-service
+    environment:
+      - PORT=3004
+      - DATABASE_URL=postgres://vistacerca:vistacerca@postgres:5432/vistacerca
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  notification-worker:
+    build: ./notification-worker
+    environment:
+      - WORKER_ID=notification-1
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+      - DATABASE_URL=postgres://vistacerca:vistacerca@postgres:5432/vistacerca
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  analytics-worker:
+    build: ./analytics-worker
+    environment:
+      - WORKER_ID=analytics-1
+      - AMQP_URL=amqp://guest:guest@rabbitmq:5672
+      - DATABASE_URL=postgres://vistacerca:vistacerca@postgres:5432/vistacerca
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=vistacerca
+      - POSTGRES_PASSWORD=vistacerca
+      - POSTGRES_DB=vistacerca
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vistacerca -d vistacerca"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
