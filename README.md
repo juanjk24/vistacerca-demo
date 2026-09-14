@@ -122,8 +122,8 @@ docker compose down -v
 
 El esquema (`database/init.sql`) se carga automáticamente al primer arranque de PostgreSQL e incluye:
 
-- 4 aliados en Mocoa / Villagarzón (Putumayo, Colombia).
-- 1 usuario demo: **Juan Cuellar, 27 años, Mocoa**.
+- 4 aliados en Colombia.
+- 1 usuario demo.
 
 ---
 
