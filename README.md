@@ -1,15 +1,16 @@
-# 👁️ VistaCerca — Ruta visual
+# VistaCerca — Ruta visual
 
 **Prototipo académico** de arquitectura distribuida (microservicios) para orientar a personas hacia una
 valoración visual. Captura síntomas, emite una clasificación **orientativa** (🟢 VERDE / 🟡 AMARILLO /
 🔴 ROJO), muestra aliados cercanos, permite agendar citas y despliega métricas en tiempo real.
 
-> ⚠️ **AVISO IMPORTANTE:** Este es un prototipo didáctico. Las reglas de clasificación son **simuladas**
+> **AVISO IMPORTANTE:** Este es un prototipo didáctico. Las reglas de clasificación son **simuladas**
 > y **no constituyen diagnóstico médico**. Usa datos de ejemplo y credenciales de desarrollo.
 
+link del video: https://youtu.be/OEe_XgiuubA
 ---
 
-## 🧱 Arquitectura
+## Arquitectura
 
 Sigue el patrón de **microservicios con API Gateway** y **eventos asíncronos**:
 
@@ -96,7 +97,7 @@ No representa criterios médicos reales.
 
 ---
 
-## 🚀 Cómo arrancar todo
+## Cómo arrancar todo
 
 Requisitos: **Docker + Docker Compose** (las imágenes de Node 24, PostgreSQL 16 y RabbitMQ se descargan solas).
 
@@ -127,7 +128,7 @@ El esquema (`database/init.sql`) se carga automáticamente al primer arranque de
 
 ---
 
-## 🧪 Cómo probarlo
+## Cómo probarlo
 
 ### Ruta rápida desde el navegador
 
@@ -189,7 +190,7 @@ curl -s http://localhost:3000/health
 
 ---
 
-## 🖥️ Ejecución local (sin Docker)
+## Ejecución local (sin Docker)
 
 Cada servicio es **Node 24 + TypeScript ESM** que se ejecuta directamente con `node` (no requiere build).
 Necesitas PostgreSQL y RabbitMQ corriendo de forma local.
@@ -218,7 +219,7 @@ Escenarios alternativos:
 
 ---
 
-## 📁 Estructura del repositorio
+## Estructura del repositorio
 
 ```
 vistacerca/
@@ -239,7 +240,7 @@ vistacerca/
 
 ---
 
-## 🔑 Temas de seguridad (para extender el prototipo)
+## Temas de seguridad (para extender el prototipo)
 
 - Los datos de conexión a PostgreSQL y RabbitMQ son **credenciales de desarrollo** y deben moverse a
   variables de entorno / secretos en una implementación real.
